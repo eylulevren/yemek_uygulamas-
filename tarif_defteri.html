@@ -1,0 +1,813 @@
+<!DOCTYPE html><html lang='tr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Tarif Defteri</title></head><body style='margin:0'><style>
+.defter {
+  --zemin: #fff8f2;
+  --kart: #ffffff;
+  --yazi: #2b2220;
+  --soluk: #7a6a63;
+  --ana-renk: #cc2e38;
+  --ikinci-renk: #f2a65a;
+  --cizgi: #f0e2d8;
+  --yesil: #2f8f55;
+  --turuncu: #c46a12;
+  --mavi: #3b7fc4;
+  background: var(--zemin);
+  color: var(--yazi);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: 16px;
+  padding-bottom: 30px;
+}
+@media (prefers-color-scheme: dark) {
+  .defter {
+    --zemin: #1b1514;
+    --kart: #271f1d;
+    --yazi: #f3e9e4;
+    --soluk: #b5a39b;
+    --ana-renk: #ff6b73;
+    --cizgi: #3a2e2b;
+    --yesil: #5fcf8b;
+    --turuncu: #f0a55a;
+    --mavi: #7ab6f5;
+  }
+}
+.defter * { box-sizing: border-box; }
+.defter [hidden] { display: none !important; }
+
+/* sekmeler */
+.defter .sekmeler { display: flex; flex-wrap: wrap; gap: 8px; max-width: 1100px; margin: auto; padding: 18px 20px 0; }
+.defter .sekme {
+  padding: 9px 16px; border-radius: 99px; cursor: pointer; font-size: .95rem;
+  border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi);
+}
+.defter .sekme.secili { background: var(--yazi); border-color: var(--yazi); color: var(--zemin); }
+
+/* üst kısım */
+.defter header { padding: 20px 20px 8px; max-width: 1100px; margin: auto; }
+.defter h1 { margin: 0; font-size: 1.8rem; }
+.defter h1 span { color: var(--ana-renk); }
+.defter #sayi, .defter .aciklama { color: var(--soluk); margin: 4px 0 14px; }
+.defter input, .defter select {
+  width: 100%; padding: 12px 16px; font-size: 1rem; font-family: inherit;
+  border-radius: 12px; border: 1px solid var(--cizgi);
+  background: var(--kart); color: var(--yazi);
+}
+.defter input[type=checkbox] { width: auto; }
+.defter .kategoriler { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 2px; }
+.defter .kategori {
+  flex: none; padding: 7px 14px; border-radius: 99px; cursor: pointer;
+  border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi); font-size: .88rem;
+}
+.defter .kategori.secili { background: var(--ana-renk); border-color: var(--ana-renk); color: #fff; }
+.defter .kucuk-buton {
+  flex: none; padding: 10px 18px; border: 0; border-radius: 12px; cursor: pointer;
+  background: var(--ana-renk); color: #fff; font-size: .95rem; font-family: inherit;
+}
+.defter .kucuk-buton.ikincil { background: var(--kart); color: var(--yazi); border: 1px solid var(--cizgi); }
+
+/* tarif kartları */
+.defter .kartlar {
+  max-width: 1100px; margin: auto; padding: 12px 20px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px;
+}
+.defter .kart {
+  background: var(--kart); border: 1px solid var(--cizgi); border-radius: 16px;
+  overflow: hidden; display: flex; flex-direction: column;
+}
+.defter .kart h2 { font-size: 1.02rem; margin: 12px 14px 6px; }
+.defter .resim {
+  height: 150px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, var(--ana-renk), var(--ikinci-renk));
+  display: flex; align-items: center; justify-content: center;
+}
+.defter .resim .emoji { font-size: 3rem; }
+.defter .resim img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.defter .etiketler { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 6px; font-size: .8rem; color: var(--soluk); }
+.defter .etiketler span { background: var(--zemin); padding: 3px 8px; border-radius: 99px; }
+.defter .buton {
+  margin: auto 14px 14px; padding: 10px; border: 0; border-radius: 10px; cursor: pointer;
+  background: var(--ana-renk); color: #fff; font-size: .95rem;
+}
+.defter .bos { grid-column: 1 / -1; text-align: center; color: var(--soluk); padding: 40px 0; }
+.defter .ozet { grid-column: 1 / -1; margin: 0; color: var(--soluk); }
+
+/* buzdolabı */
+.defter .ekle-satiri { display: flex; gap: 8px; }
+.defter .uyari-yazi { color: var(--turuncu); font-size: .85rem; min-height: 1.2em; margin: 6px 0 0; }
+.defter .cipler { display: flex; flex-wrap: wrap; gap: 6px; }
+.defter .cip {
+  padding: 6px 12px; border-radius: 99px; cursor: pointer; font-size: .85rem; font-family: inherit;
+  border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi);
+}
+.defter .cip.secili { background: var(--yesil); border-color: var(--yesil); color: #fff; }
+.defter .cip.secili::before { content: "✓ "; }
+.defter .secilenler { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; }
+.defter .secilenler .cip::after { content: " ×"; }
+.defter .secilenler .cip.secili::before { content: ""; }
+.defter .temizle { border: 0; background: none; color: var(--soluk); cursor: pointer; text-decoration: underline; font-size: .85rem; }
+.defter .kutu { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 16px; padding: 12px 16px; margin-top: 12px; }
+.defter .kutu summary { cursor: pointer; font-weight: 600; }
+.defter .kutu h3 { margin: 0 0 8px; font-size: 1rem; }
+.defter .kutu h4 { margin: 14px 0 6px; font-size: .78rem; color: var(--soluk); text-transform: uppercase; letter-spacing: .04em; }
+.defter .uyum { padding: 0 14px 10px; font-size: .82rem; }
+.defter .cubuk { height: 6px; background: var(--cizgi); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+.defter .cubuk span { display: block; height: 100%; background: var(--yesil); }
+.defter .eksik { color: var(--soluk); }
+.defter .tamam { color: var(--yesil); font-weight: 600; }
+.defter .satir { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--cizgi); }
+.defter .satir:last-child { border-bottom: 0; }
+.defter .satir .ad { flex: 1; }
+.defter .satir small { display: block; color: var(--soluk); }
+.defter .durum { font-size: .8rem; padding: 3px 9px; border-radius: 99px; background: var(--zemin); white-space: nowrap; }
+.defter .durum.iyi { color: var(--yesil); }
+.defter .durum.uyari { color: var(--turuncu); }
+.defter .durum.gecti { color: var(--ana-renk); }
+.defter .sil { border: 0; background: none; color: var(--soluk); cursor: pointer; font-size: 1rem; padding: 2px 6px; }
+.defter .tarif-link { color: var(--ana-renk); cursor: pointer; text-decoration: underline dotted; }
+
+/* yemek günlüğü */
+.defter .gunluk-formu { display: grid; grid-template-columns: 160px 140px 1fr auto auto; gap: 8px; align-items: center; }
+@media (max-width: 760px) {
+  .defter .gunluk-formu { grid-template-columns: 1fr 1fr; }
+  .defter .gunluk-formu .genis { grid-column: 1 / -1; }
+}
+.defter .onay { display: flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--soluk); white-space: nowrap; cursor: pointer; }
+.defter .hafta-gezgini { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.defter .hafta-gezgini b { min-width: 190px; text-align: center; }
+.defter #hafta-ozeti { color: var(--soluk); margin: 10px 0 0; }
+.defter .hafta {
+  max-width: 1100px; margin: auto; padding: 12px 20px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px;
+}
+.defter .gun { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 14px; padding: 12px 14px; }
+.defter .gun.bugun { border-color: var(--ana-renk); box-shadow: inset 0 0 0 1px var(--ana-renk); }
+.defter .gun h3 { margin: 0 0 6px; font-size: .95rem; display: flex; justify-content: space-between; }
+.defter .gun h3 small { color: var(--soluk); font-weight: 400; }
+.defter .gun ul { list-style: none; padding: 0; margin: 0; }
+.defter .gun li { display: flex; align-items: center; gap: 6px; padding: 5px 0; font-size: .9rem; border-bottom: 1px dashed var(--cizgi); }
+.defter .gun li:last-child { border-bottom: 0; }
+.defter .gun li .yemek-adi { flex: 1; }
+.defter .ogun { flex: none; font-size: .7rem; background: var(--zemin); color: var(--soluk); padding: 2px 7px; border-radius: 99px; }
+.defter .bos-gun { color: var(--soluk); font-size: .85rem; }
+
+/* tarif detay sayfası */
+.defter #detay { max-width: 860px; margin: auto; padding: 20px; }
+.defter .geri {
+  border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi);
+  padding: 8px 16px; border-radius: 99px; cursor: pointer; font-size: .9rem; margin-bottom: 16px;
+}
+.defter #detay .resim { height: 260px; border-radius: 16px; }
+.defter #detay .resim .emoji { font-size: 5rem; }
+.defter .kategori-adi { color: var(--ana-renk); font-weight: 600; font-size: .85rem; margin: 18px 0 4px; }
+.defter #detay h2 { margin: 0 0 14px; font-size: 1.6rem; }
+.defter .bilgi-kutulari { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 680px) { .defter .bilgi-kutulari { grid-template-columns: repeat(2, 1fr); } }
+.defter .bilgi-kutusu {
+  background: var(--kart); border: 1px solid var(--cizgi); border-radius: 12px;
+  padding: 10px; text-align: center;
+}
+.defter .bilgi-kutusu small { display: block; color: var(--soluk); font-size: .78rem; }
+.defter .bilgi-kutusu b { font-size: 1rem; }
+.defter .saklama-kutusu {
+  margin-top: 12px; padding: 12px 14px; border-radius: 12px; line-height: 1.5; font-size: .92rem;
+  background: var(--kart); border: 1px solid var(--cizgi); border-left: 4px solid var(--mavi);
+}
+.defter .detay-butonlari { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.defter .mesaj { color: var(--yesil); font-size: .88rem; min-height: 1.2em; margin: 8px 0 0; }
+.defter .bolumler { display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; margin-top: 18px; }
+@media (max-width: 680px) { .defter .bolumler { grid-template-columns: 1fr; } }
+.defter .bolum { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 16px; padding: 16px 18px; }
+.defter .bolum h3 { margin: 0 0 10px; color: var(--ana-renk); }
+.defter .malzemeler { list-style: none; padding: 0; margin: 0; }
+.defter .malzemeler li { padding: 7px 0; border-bottom: 1px dashed var(--cizgi); cursor: pointer; }
+.defter .malzemeler li:last-child { border-bottom: 0; }
+.defter .malzemeler li::before { content: "○ "; color: var(--ana-renk); }
+.defter .malzemeler li.alindi { text-decoration: line-through; color: var(--soluk); }
+.defter .malzemeler li.alindi::before { content: "● "; }
+.defter .adimlar { margin: 0; padding-left: 22px; }
+.defter .adimlar li { margin: 0 0 10px; line-height: 1.5; }
+.defter .not { color: var(--soluk); font-size: .8rem; margin-top: 8px; }
+</style>
+        <div class="defter">
+          <nav class="sekmeler" id="sekmeler">
+            <button class="sekme secili" data-sekme="tarifler">📖 Tarifler</button>
+            <button class="sekme" data-sekme="dolap">🧊 Buzdolabım</button>
+            <button class="sekme" data-sekme="gunluk">📅 Yediklerim</button>
+          </nav>
+
+          <div id="sayfa-tarifler">
+            <header>
+              <h1>🍲 Tarif <span>Defteri</span></h1>
+              <p id="sayi"></p>
+              <input id="ara" placeholder="Tarif ara... (örn: kek, çorba)">
+              <div class="kategoriler" id="kategoriler"></div>
+            </header>
+            <main id="liste" class="kartlar"></main>
+          </div>
+
+          <div id="sayfa-dolap" hidden>
+            <header>
+              <h1>🧊 Buzdolabım</h1>
+              <p class="aciklama">Dolabında olan malzemeleri seç, elindekilerle yapabileceğin tarifleri bulalım.</p>
+              <div class="ekle-satiri">
+                <input id="malzeme-yaz" list="malzeme-onerileri" placeholder="Malzeme yaz... (örn: yumurta)">
+                <button class="kucuk-buton" id="malzeme-ekle-buton">Ekle</button>
+              </div>
+              <datalist id="malzeme-onerileri"></datalist>
+              <p class="uyari-yazi" id="malzeme-uyari"></p>
+              <div class="secilenler" id="secilenler"></div>
+              <details class="kutu">
+                <summary>Bütün malzemeler (seçmek için tıkla)</summary>
+                <div id="malzeme-gruplari"></div>
+              </details>
+              <div class="kutu" id="hazir-yemekler"></div>
+            </header>
+            <main id="oneriler" class="kartlar"></main>
+          </div>
+
+          <div id="sayfa-gunluk" hidden>
+            <header>
+              <h1>📅 Yemek <span>Günlüğüm</span></h1>
+              <p class="aciklama">Her gün yediklerini ekle, haftalık listen burada birikir.</p>
+              <form class="gunluk-formu" id="gunluk-formu">
+                <input type="date" id="g-tarih">
+                <select id="g-ogun"></select>
+                <input class="genis" id="g-yemek" list="tarif-adlari" placeholder="Ne yedin? (örn: Humus)" autocomplete="off">
+                <label class="onay"><input type="checkbox" id="g-dolap"> Artanı dolaba kaldırdım</label>
+                <button class="kucuk-buton" type="submit">Ekle</button>
+              </form>
+              <datalist id="tarif-adlari"></datalist>
+              <div class="hafta-gezgini">
+                <button class="kucuk-buton ikincil" id="onceki-hafta">← Önceki</button>
+                <b id="hafta-adi"></b>
+                <button class="kucuk-buton ikincil" id="sonraki-hafta">Sonraki →</button>
+                <button class="kucuk-buton ikincil" id="bu-hafta">Bu hafta</button>
+              </div>
+              <p id="hafta-ozeti"></p>
+            </header>
+            <main id="hafta" class="hafta"></main>
+          </div>
+
+          <section id="detay" hidden></section>
+        </div>
+        <script>
+const tarifler = [{"ad": "Kabaran Kakaolu Sade Kek", "kisi": "8-10", "hazirlik": "15 dk", "pisirme": "45 dk", "kategori": "T", "emoji": "🍰", "resim": "https://i.nefisyemektarifleri.com/2026/10/06/kabaran-kakaolu-sade-kek.jpg", "malzemeler": ["4 yumurta", "1,5 su bardağı şeker", "1 su bardağı sıvı yağ", "1 su bardağı süt", "4 su bardağı un", "1 yemek kaşığı nişasta", "2 yemek kaşığı sıcak su", "1 paket vanilya", "2 paket kabartma tozu", "3 yemek kaşığı kakao", "2 yemek kaşığı süt (kakaolu kısım için)"], "yapilis": ["Malzemeleri oda sıcaklığına getirin, yumurta ile şekeri mikserle kabarana kadar çırpın.", "Kakao ve 2 kaşık süt hariç diğer malzemeleri ekleyip çırpmaya devam edin.", "Karışımın yaklaşık üçte ikisini yağlanmış kek kalıbına dökün.", "Kalan karışıma kakao ve sütü ekleyip çırpın, kalıbın üstüne dökün ve çatalla desen verin.", "Önceden ısıtılmış 180 derece fırında 40-45 dakika pişirin, soğuyunca kalıptan çıkarın."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Kremasız kekler kapalı kapta oda sıcaklığında 2-3 gün, dolapta yaklaşık 1 hafta dayanır. Kurumaması için streç filme sarın."}, "anahtarlar": ["yumurta", "süt", "un", "şeker", "nişasta", "kabartma tozu", "vanilya", "kakao", "sıvı yağ"]}, {"ad": "Kabarma Garantili Kakaolu Sade Kek", "kisi": "6-8", "hazirlik": "10 dk", "pisirme": "40 dk", "kategori": "T", "emoji": "🍰", "resim": "https://i.nefisyemektarifleri.com/2023/07/28/kabarma-garantili-kakaolu-sade-kek-tarifi-videolu-1-320x213.jpg", "malzemeler": ["3 yumurta", "1 su bardağı şeker", "1 su bardağı süt", "Yarım su bardağı sıvı yağ", "2,5 su bardağı un", "1 paket kabartma tozu", "1 paket vanilya", "2 yemek kaşığı kakao"], "yapilis": ["Yumurta ve şekeri köpük köpük olana kadar çırpın.", "Süt ve sıvı yağı ekleyip karıştırın.", "Un, kabartma tozu ve vanilyayı eleyerek ekleyin.", "Hamurun yarısını ayırıp içine kakaoyu karıştırın.", "Kalıba önce sade, sonra kakaolu hamuru dökün ve 170 derecede 40 dakika pişirin."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Kremasız kekler kapalı kapta oda sıcaklığında 2-3 gün, dolapta yaklaşık 1 hafta dayanır. Kurumaması için streç filme sarın."}, "anahtarlar": ["yumurta", "süt", "un", "şeker", "kabartma tozu", "vanilya", "kakao", "sıvı yağ"]}, {"ad": "Çok Kabaran Cevizli Tarçınlı Kek", "kisi": "6-8", "hazirlik": "5 dk", "pisirme": "50 dk", "kategori": "T", "emoji": "🍰", "resim": "https://i.nefisyemektarifleri.com/2018/11/01/cok-kabaran-cevizli-tarcinli-kek-tarifi-videolu-320x213.jpg", "malzemeler": ["3 yumurta", "1 su bardağı şeker", "1 su bardağı süt", "2/3 su bardağı sıvı yağ", "2,5 su bardağı un", "1 su bardağı iri dövülmüş ceviz", "1 yemek kaşığı tarçın", "1 paket kabartma tozu", "1 paket vanilya"], "yapilis": ["Yumurta ve şekeri iyice çırpın.", "Süt ve yağı ekleyip karıştırın.", "Un, tarçın, kabartma tozu ve vanilyayı ekleyip pürüzsüz bir hamur elde edin.", "Cevizleri biraz unlayıp hamura ekleyin, böylece dibe çökmezler.", "Yağlanmış kalıpta 170 derecede yaklaşık 50 dakika pişirin."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Kremasız kekler kapalı kapta oda sıcaklığında 2-3 gün, dolapta yaklaşık 1 hafta dayanır. Kurumaması için streç filme sarın."}, "anahtarlar": ["yumurta", "süt", "un", "şeker", "kabartma tozu", "vanilya", "ceviz", "sıvı yağ", "tarçın"]}, {"ad": "Starbucks Tadında Havuçlu Kek", "kisi": "8-10", "hazirlik": "25 dk", "pisirme": "45 dk", "kategori": "T", "emoji": "🧁", "resim": "https://i.nefisyemektarifleri.com/2019/08/19/kabardikca-kabaran-starbucks-keki-videolu-320x213.jpg", "malzemeler": ["3 yumurta", "1 su bardağı esmer şeker", "3/4 su bardağı sıvı yağ", "2 orta boy havuç (rendelenmiş)", "2 su bardağı un", "1 çay kaşığı tarçın", "1 paket kabartma tozu", "Yarım su bardağı ceviz"], "yapilis": ["Havuçları ince rendeleyin.", "Yumurta ve esmer şekeri çırpın, sıvı yağı ekleyin.", "Un, tarçın ve kabartma tozunu ekleyip karıştırın.", "Havuç ve cevizi ekleyip spatula ile karıştırın.", "180 derece fırında 45 dakika pişirin, kürdan temiz çıkınca alın."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Havuç kekin nemli kalmasını sağlar; oda sıcaklığında 2 gün, dolapta 1 haftaya kadar dayanır."}, "anahtarlar": ["yumurta", "havuç", "un", "şeker", "kabartma tozu", "ceviz", "sıvı yağ", "tarçın"]}, {"ad": "Yumuşacık Kakaolu Muffin Kek", "kisi": "12-14", "hazirlik": "10 dk", "pisirme": "20 dk", "kategori": "T", "emoji": "🧁", "resim": "https://i.nefisyemektarifleri.com/2020/10/07/yumusacik-kakaolu-muffin-kek-tarifi-videolu-320x213.jpg", "malzemeler": ["2 yumurta", "1 su bardağı şeker", "1 su bardağı süt", "Yarım su bardağı sıvı yağ", "2 su bardağı un", "3 yemek kaşığı kakao", "1 paket kabartma tozu", "Yarım su bardağı damla çikolata"], "yapilis": ["Yumurta ve şekeri çırpın.", "Süt ve sıvı yağı ekleyin.", "Un, kakao ve kabartma tozunu eleyerek ekleyin.", "Damla çikolataları ekleyip karıştırın.", "Muffin kalıplarını 3'te 2'sine kadar doldurup 180 derecede 20 dakika pişirin."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Kremasız kekler kapalı kapta oda sıcaklığında 2-3 gün, dolapta yaklaşık 1 hafta dayanır. Kurumaması için streç filme sarın."}, "anahtarlar": ["yumurta", "süt", "un", "şeker", "kabartma tozu", "kakao", "çikolata", "sıvı yağ"]}, {"ad": "Kakaolu Islak Kek", "kisi": "6-8", "hazirlik": "15 dk", "pisirme": "45 dk", "kategori": "T", "emoji": "🍫", "resim": "https://i.nefisyemektarifleri.com/2023/04/26/kakaolu-islak-kek-8-320x213.jpg", "malzemeler": ["3 yumurta", "1 su bardağı şeker", "1 su bardağı süt", "3/4 su bardağı sıvı yağ", "4 yemek kaşığı kakao", "1,5 su bardağı un", "1 paket kabartma tozu", "1 paket vanilya", "Sos için: 1,5 su bardağı süt, 2 yemek kaşığı kakao, 2 yemek kaşığı şeker, 1 yemek kaşığı tereyağı"], "yapilis": ["Yumurta ve şekeri çırpın, süt ve yağı ekleyin.", "Kakao, un, kabartma tozu ve vanilyayı ekleyip karıştırın.", "Hamuru kalıba döküp 175 derecede 35-40 dakika pişirin.", "Sos malzemelerini tencerede kaynayana kadar karıştırın.", "Kek sıcakken çatalla delip sosun çoğunu üstüne dökün, buzdolabında 1-2 saat dinlendirin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Süt bazlı sos içerdiği için mutlaka buzdolabında saklanmalı."}, "anahtarlar": ["yumurta", "süt", "tereyağı", "un", "şeker", "kabartma tozu", "vanilya", "kakao", "sıvı yağ"]}, {"ad": "Portakallı Kakaolu Kek", "kisi": "8-10", "hazirlik": "5 dk", "pisirme": "50 dk", "kategori": "T", "emoji": "🍊", "resim": "https://i.nefisyemektarifleri.com/2022/12/15/portakalli-kakaolu-kek-12-320x213.jpg", "malzemeler": ["3 yumurta", "1 su bardağı şeker", "1 portakalın suyu ve kabuk rendesi", "Yarım su bardağı sıvı yağ", "2,5 su bardağı un", "2 yemek kaşığı kakao", "1 paket kabartma tozu", "1 paket vanilya"], "yapilis": ["Yumurta ve şekeri çırpın.", "Portakal suyu, kabuk rendesi ve sıvı yağı ekleyin.", "Un, kabartma tozu ve vanilyayı ekleyip karıştırın.", "Hamurun yarısına kakao ekleyin ve iki hamuru kalıba sırayla dökün.", "170 derecede 50 dakika pişirin."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Kremasız kekler kapalı kapta oda sıcaklığında 2-3 gün, dolapta yaklaşık 1 hafta dayanır. Kurumaması için streç filme sarın."}, "anahtarlar": ["yumurta", "portakal", "un", "şeker", "kabartma tozu", "vanilya", "kakao", "sıvı yağ"]}, {"ad": "Çok Kabaran Sulu Kek", "kisi": "6-8", "hazirlik": "15 dk", "pisirme": "40 dk", "kategori": "T", "emoji": "🍰", "resim": "https://i.nefisyemektarifleri.com/2018/10/15/cok-kabaran-sulu-kek-yapimi-videolu-320x213.jpg", "malzemeler": ["3 yumurta", "1 su bardağı şeker", "1 su bardağı süt", "Yarım su bardağı sıvı yağ", "2 su bardağı un", "3 yemek kaşığı kakao", "1 paket kabartma tozu", "Sos için: 2 su bardağı süt, 1 yemek kaşığı kakao, 2 yemek kaşığı şeker"], "yapilis": ["Kek malzemelerini sırayla çırparak karıştırın.", "Yağlanmış tepsiye döküp 180 derecede 35-40 dakika pişirin.", "Sos malzemelerini ılık olacak şekilde ısıtın.", "Fırından çıkan kekin üstüne ılık sosu yavaş yavaş dökün.", "Sosu çekince dilimleyip servis edin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Süt bazlı sos içerdiği için mutlaka buzdolabında saklanmalı."}, "anahtarlar": ["yumurta", "süt", "un", "şeker", "kabartma tozu", "kakao", "sıvı yağ"]}, {"ad": "Vişneli Sade Kek", "kisi": "12-14", "hazirlik": "25 dk", "pisirme": "40 dk", "kategori": "T", "emoji": "🍒", "resim": "https://i.nefisyemektarifleri.com/2017/09/13/visneli-sade-kek-yapimi-resimli-ve-videolu-320x213.jpg", "malzemeler": ["3 yumurta", "1 su bardağı şeker", "1 su bardağı yoğurt", "Yarım su bardağı sıvı yağ", "2,5 su bardağı un", "1 su bardağı çekirdeği çıkarılmış vişne", "1 paket kabartma tozu", "1 paket vanilya"], "yapilis": ["Vişnelerin çekirdeklerini çıkarıp suyunu süzün.", "Yumurta ve şekeri çırpın, yoğurt ve yağı ekleyin.", "Un, kabartma tozu ve vanilyayı ekleyin.", "Vişneleri bir kaşık unla karıştırıp hamura ekleyin.", "175 derecede 40 dakika pişirin."], "saklama": {"en_az": 4, "en_cok": 5, "not": "Meyveli ve yoğurtlu olduğu için çabuk nemlenir; dolapta kapalı kapta saklayın."}, "anahtarlar": ["yumurta", "yoğurt", "vişne", "un", "şeker", "kabartma tozu", "vanilya", "sıvı yağ"]}, {"ad": "Ispanaklı Kakaolu Kek", "kisi": "12-14", "hazirlik": "10 dk", "pisirme": "40 dk", "kategori": "T", "emoji": "🍫", "resim": "https://i.nefisyemektarifleri.com/2017/02/17/ispanakli-kakaolu-kek-videosu-320x213.jpg", "malzemeler": ["Yarım bağ ıspanak", "3 yumurta", "1 su bardağı şeker", "3/4 su bardağı sıvı yağ", "2,5 su bardağı un", "2 yemek kaşığı kakao", "1 paket kabartma tozu", "1 paket vanilya"], "yapilis": ["Ispanakları yıkayıp 2 dakika haşlayın ve blenderdan geçirin.", "Yumurta ve şekeri çırpın, yağ ve ıspanak püresini ekleyin.", "Un, kabartma tozu ve vanilyayı ekleyip karıştırın.", "Hamurun yarısına kakao ekleyin, iki hamuru kalıba sırayla dökün.", "175 derecede 40 dakika pişirin."], "saklama": {"en_az": 4, "en_cok": 5, "not": "Sebze püresi içerdiği için sade keklere göre biraz daha kısa dayanır."}, "anahtarlar": ["yumurta", "ıspanak", "un", "şeker", "kabartma tozu", "vanilya", "kakao", "sıvı yağ"]}, {"ad": "Ezber Bozan Kek", "kisi": "10-12", "hazirlik": "15 dk", "pisirme": "40 dk", "kategori": "T", "emoji": "🍰", "resim": "https://i.nefisyemektarifleri.com/2016/09/22/ezber-bozan-kek-kabaran-bayatlamayan-videosu-320x180.jpg", "malzemeler": ["4 yumurta (sarısı ve beyazı ayrı)", "1 su bardağı şeker", "1 su bardağı süt", "1 su bardağı sıvı yağ", "2,5 su bardağı un", "1 yemek kaşığı nişasta", "1 paket kabartma tozu", "1 paket vanilya"], "yapilis": ["Yumurta beyazlarını bir tutam tuzla kar gibi olana kadar çırpın.", "Başka bir kapta sarıları şekerle çırpın, süt ve yağı ekleyin.", "Un, nişasta, kabartma tozu ve vanilyayı ekleyip karıştırın.", "Çırpılmış beyazları spatula ile yavaşça hamura katın.", "170 derecede 40 dakika pişirin, ilk 30 dakika fırın kapağını açmayın."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Kremasız kekler kapalı kapta oda sıcaklığında 2-3 gün, dolapta yaklaşık 1 hafta dayanır. Kurumaması için streç filme sarın."}, "anahtarlar": ["yumurta", "süt", "un", "şeker", "nişasta", "kabartma tozu", "vanilya", "sıvı yağ"]}, {"ad": "Süt Helvası", "kisi": "4-6", "hazirlik": "5 dk", "pisirme": "20 dk", "kategori": "T", "emoji": "🍮", "resim": "https://i.nefisyemektarifleri.com/2026/10/05/sut-helvasi-600x400.jpg", "malzemeler": ["1 litre süt", "1 su bardağı un", "125 gr tereyağı", "1,5 su bardağı şeker", "1 paket vanilya", "2 yemek kaşığı dolmalık fıstık"], "yapilis": ["Sütü şekerle birlikte ayrı bir tencerede ısıtın.", "Tereyağını eritip fıstıkları hafifçe kavurun.", "Unu ekleyip rengi çok koyulaşmadan 5-6 dakika kavurun.", "Sıcak sütü azar azar ekleyip sürekli karıştırın.", "Koyulaşınca vanilyayı ekleyin, kapağını kapatıp 10 dakika demlendirin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Sütlü tatlılar gibi buzdolabında saklanmalı; ısıtarak tüketilebilir."}, "anahtarlar": ["süt", "tereyağı", "un", "şeker", "vanilya", "fıstık"]}, {"ad": "Şeftalili Crumble Cheesecake", "kisi": "6-8", "hazirlik": "30 dk", "pisirme": "1 saat", "kategori": "T", "emoji": "🍑", "resim": "https://i.nefisyemektarifleri.com/2026/10/02/seftalili-crumble-cheesecake-320x213.jpg", "malzemeler": ["1 paket bisküvi", "75 gr eritilmiş tereyağı", "400 gr labne", "200 ml krema", "3/4 su bardağı şeker", "2 yumurta", "1 yemek kaşığı nişasta", "2 şeftali", "Crumble için: yarım su bardağı un, 3 yemek kaşığı şeker, 50 gr soğuk tereyağı"], "yapilis": ["Bisküvileri ufalayıp tereyağı ile karıştırın ve kalıbın tabanına bastırın.", "Labne, krema, şeker, yumurta ve nişastayı pürüzsüz olana kadar karıştırın.", "Kremayı tabanın üstüne dökün, küp doğranmış şeftalileri üstüne dizin.", "Crumble malzemelerini parmak uçlarıyla ufalayıp en üste serpin.", "160 derecede 1 saat pişirin, soğuyunca bir gece buzdolabında bekletin."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Cheesecake dolapta 5-7 gün dayanır. Taze meyveli olduğu için ilk günlerde yemek daha iyi."}, "anahtarlar": ["yumurta", "tereyağı", "krema", "labne", "şeftali", "un", "şeker", "nişasta", "bisküvi"]}, {"ad": "Kakaolu Muzlu Krep", "kisi": "2-4", "hazirlik": "10 dk", "pisirme": "15 dk", "kategori": "T", "emoji": "🥞", "resim": "https://i.nefisyemektarifleri.com/2026/10/06/cocuklarin-favorisi-kakaolu-muzlu-krep-320x213.jpg", "malzemeler": ["2 yumurta", "1 su bardağı süt", "1 su bardağı un", "1 yemek kaşığı kakao", "1 yemek kaşığı şeker", "1 yemek kaşığı sıvı yağ", "1 muz", "Fındık kreması"], "yapilis": ["Yumurta, süt, un, kakao, şeker ve yağı topaksız olana kadar çırpın.", "Hamuru 10 dakika dinlendirin.", "Yağlanmış tavaya bir kepçe hamur döküp ince yayın, iki tarafını pişirin.", "Krepin üstüne fındık kreması sürüp muz dilimlerini dizin.", "Rulo veya üçgen şeklinde katlayıp servis edin."], "saklama": {"en_az": 1, "en_cok": 2, "not": "Muz kısa sürede kararır, muzlu krep hemen yenmeli. Sade krepler dolapta 3-5 gün saklanabilir."}, "anahtarlar": ["yumurta", "süt", "muz", "un", "şeker", "kakao", "sıvı yağ", "fındık kreması"]}, {"ad": "Kahve Soslu Browni Kurabiye", "kisi": "10-12", "hazirlik": "15 dk", "pisirme": "20 dk", "kategori": "T", "emoji": "🍪", "resim": "https://i.nefisyemektarifleri.com/2026/10/06/kahve-soslu-browni-kurabiye-320x213.jpg", "malzemeler": ["100 gr bitter çikolata", "50 gr tereyağı", "1 yumurta", "Yarım su bardağı şeker", "1 su bardağı un", "1 yemek kaşığı kakao", "Yarım çay kaşığı kabartma tozu", "Sos için: 1 çay kaşığı granül kahve, 2 yemek kaşığı sıcak su, 3 yemek kaşığı pudra şekeri"], "yapilis": ["Çikolata ve tereyağını benmari usulü eritin.", "Yumurta ve şekeri çırpıp çikolatalı karışıma ekleyin.", "Un, kakao ve kabartma tozunu ekleyip koyu bir hamur yapın.", "Ceviz büyüklüğünde parçalar alıp tepsiye dizin, 175 derecede 10-12 dakika pişirin.", "Kahveyi sıcak suda eritip pudra şekeriyle karıştırın ve soğuyan kurabiyelerin üstüne gezdirin."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Kapalı kapta oda sıcaklığında 4-5 gün, dolapta 1 haftaya kadar dayanır."}, "anahtarlar": ["yumurta", "tereyağı", "un", "şeker", "kabartma tozu", "kakao", "çikolata", "kahve"]}, {"ad": "Tavuklu Tatlı Patates Çorbası", "kisi": "4-6", "hazirlik": "5 dk", "pisirme": "30 dk", "kategori": "C", "emoji": "🥣", "resim": "https://i.nefisyemektarifleri.com/2026/10/05/tavuklu-tatli-patates-corbasi-1-320x213.jpg", "malzemeler": ["1 adet tavuk göğsü", "2 tatlı patates", "1 soğan", "1 havuç", "1 yemek kaşığı tereyağı", "5 su bardağı tavuk suyu", "Tuz, karabiber"], "yapilis": ["Tavuk göğsünü haşlayıp didikleyin, suyunu ayırın.", "Soğan ve havucu tereyağında kavurun.", "Küp doğranmış tatlı patatesi ve tavuk suyunu ekleyip yumuşayana kadar pişirin.", "Blenderdan geçirin, tavukları ekleyip birkaç dakika daha kaynatın.", "Tuz ve karabiberini ayarlayıp servis edin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Çorbalar dolapta 3-4 gün dayanır. Her seferinde sadece içeceğiniz kadarını ısıtın."}, "anahtarlar": ["tereyağı", "tavuk", "soğan", "havuç", "patates"]}, {"ad": "Kars Yöresine Ait Kesme Çorbası", "kisi": "4-6", "hazirlik": "30 dk", "pisirme": "25 dk", "kategori": "C", "emoji": "🥣", "resim": "https://i.nefisyemektarifleri.com/2026/10/02/kars-yoresine-ait-kesme-corbasi-1-320x213.jpg", "malzemeler": ["Hamur için: 1 yumurta, 1 su bardağı un, yarım çay kaşığı tuz, biraz su", "1 su bardağı haşlanmış yeşil mercimek", "1 soğan", "1 yemek kaşığı salça", "2 yemek kaşığı tereyağı", "6 su bardağı su", "1 tatlı kaşığı kuru nane", "Tuz"], "yapilis": ["Yumurta, un, tuz ve azar azar su ile sert bir hamur yoğurun.", "Hamuru ince açıp biraz kurutun, sonra küçük kareler halinde kesin.", "Soğanı tereyağında kavurup salçayı ekleyin.", "Su ve mercimeği ekleyip kaynatın, kesme hamurları ilave edin.", "Hamurlar pişince nane ve tuz ekleyip ocaktan alın."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Kesme hamurlar bekledikçe suyu çeker; ısıtırken biraz su ekleyin."}, "anahtarlar": ["yumurta", "tereyağı", "soğan", "un", "mercimek", "salça"]}, {"ad": "Tavuk Kalamar", "kisi": "4-6", "hazirlik": "10 dk", "pisirme": "20 dk", "kategori": "A", "emoji": "🍗", "resim": "https://i.nefisyemektarifleri.com/2026/10/05/tavuk-kalamar-600x400.jpg", "malzemeler": ["500 gr tavuk göğsü", "1 su bardağı un", "2 yumurta", "1 su bardağı galeta unu", "Tuz, karabiber, toz kırmızı biber", "Kızartmak için sıvı yağ"], "yapilis": ["Tavuk göğsünü ince şeritler halinde kesin, baharatlarla harmanlayın.", "Unu, çırpılmış yumurtayı ve galeta ununu ayrı kaplara koyun.", "Tavukları sırayla una, yumurtaya ve galeta ununa bulayın.", "Kızgın yağda altın rengi olana kadar kızartın.", "Kağıt havlu üzerine alıp yağını süzdürün, sıcak servis edin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Pişmiş tavuk dolapta 3-4 gün dayanır; fırında ısıtırsanız çıtırlığı geri gelir."}, "anahtarlar": ["yumurta", "tavuk", "un", "galeta unu", "sıvı yağ"]}, {"ad": "Kıyma (Tantuni Tarzı)", "kisi": "2-4", "hazirlik": "10 dk", "pisirme": "35 dk", "kategori": "A", "emoji": "🥩", "resim": "https://i.nefisyemektarifleri.com/2026/10/06/kiyma-tantuni-tarzi-320x213.jpg", "malzemeler": ["300 gr kıyma", "1 soğan", "2 domates", "1 yemek kaşığı sıvı yağ", "Pul biber, kimyon, tuz", "Yarım demet maydanoz", "Lavaş"], "yapilis": ["Kıymayı az yağda suyunu çekene kadar kavurun.", "Baharatları ekleyip birkaç dakika daha kavurun.", "Soğanı piyazlık doğrayıp maydanozla karıştırın, domatesleri küp doğrayın.", "Lavaşı tavada ısıtıp kıymayı, soğanı ve domatesi içine koyun.", "Dürüm yapıp sıcak servis edin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Kıymalı harcı ayrı saklayın; lavaşa sarılmış hali aynı gün yenmeli."}, "anahtarlar": ["kıyma", "soğan", "domates", "maydanoz", "sıvı yağ", "lavaş"]}, {"ad": "Harran Kubbesi", "kisi": "2-4", "hazirlik": "5 dk", "pisirme": "1 saat", "kategori": "A", "emoji": "🥘", "resim": "https://i.nefisyemektarifleri.com/2026/10/05/harran-kubbesi-320x213.jpg", "malzemeler": ["2 su bardağı ince bulgur", "250 gr yağsız kıyma (dış harç için)", "200 gr kıyma (iç harç için)", "1 soğan", "Yarım su bardağı ceviz", "1 yemek kaşığı biber salçası", "Pul biber, kimyon, tuz", "2 yemek kaşığı tereyağı"], "yapilis": ["Bulguru az suyla ıslatıp yağsız kıyma, salça ve baharatla iyice yoğurun.", "İç harç için kıymayı soğanla kavurup ceviz ve baharatları ekleyin.", "Dış harcın yarısını yağlanmış tepsiye yayın, iç harcı üstüne serin.", "Kalan dış harçla üstünü kapatın, dilimleyip tereyağı gezdirin.", "200 derece fırında yaklaşık 1 saat pişirin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Pişmiş etli yemekler dolapta 3-4 gün dayanır, dondurucuda 2-3 ay saklanabilir."}, "anahtarlar": ["tereyağı", "kıyma", "soğan", "ceviz", "bulgur", "salça"]}, {"ad": "İspir Fasulyesi", "kisi": "4-6", "hazirlik": "10 dk", "pisirme": "30 dk", "kategori": "A", "emoji": "🫘", "resim": "https://i.nefisyemektarifleri.com/2026/10/06/ispir-fasulyesi-320x213.jpg", "malzemeler": ["2 su bardağı İspir kuru fasulyesi (bir gece önceden ıslatılmış)", "1 soğan", "1 yemek kaşığı domates salçası", "2 yemek kaşığı tereyağı", "4 su bardağı sıcak su", "Tuz, pul biber"], "yapilis": ["Islatılmış fasulyeleri süzün.", "Soğanı tereyağında kavurup salçayı ekleyin.", "Fasulyeleri ve sıcak suyu ekleyin.", "Düdüklü tencerede 25-30 dakika pişirin.", "Tuzunu ekleyip birkaç dakika daha kaynatın, pilavla servis edin."], "saklama": {"en_az": 3, "en_cok": 5, "not": "Pişmiş kuru baklagil yemekleri dolapta 3-5 gün dayanır."}, "anahtarlar": ["tereyağı", "soğan", "domates", "fasulye", "salça"]}, {"ad": "Katıklı Kabak", "kisi": "4-6", "hazirlik": "15 dk", "pisirme": "30 dk", "kategori": "A", "emoji": "🎃", "resim": "https://i.nefisyemektarifleri.com/2026/10/06/katikli-kabak-320x213.jpg", "malzemeler": ["3 kabak", "1 soğan", "2 yemek kaşığı zeytinyağı", "1 su bardağı yoğurt", "2 diş sarımsak", "1 yemek kaşığı tereyağı", "Pul biber, tuz"], "yapilis": ["Kabakları yarım ay şeklinde doğrayın.", "Soğanı zeytinyağında kavurun, kabakları ekleyip yumuşayana kadar pişirin.", "Yoğurdu ezilmiş sarımsak ve tuzla çırpın.", "Kabakları tabağa alıp üstüne sarımsaklı yoğurdu (katık) dökün.", "Tereyağını pul biberle kızdırıp üstüne gezdirin."], "saklama": {"en_az": 2, "en_cok": 3, "not": "Sarımsaklı yoğurtlu hali 2-3 gün içinde yenmeli; mümkünse yoğurdu ayrı saklayın."}, "anahtarlar": ["yoğurt", "tereyağı", "soğan", "sarımsak", "kabak", "zeytinyağı"]}, {"ad": "Çiğ Börek", "kisi": "4-6", "hazirlik": "20 dk", "pisirme": "15 dk", "kategori": "H", "emoji": "🥟", "resim": "https://i.nefisyemektarifleri.com/2026/10/05/cig-borek-5-320x213.jpg", "malzemeler": ["3 su bardağı un", "1 su bardağı ılık su", "1 çay kaşığı tuz", "250 gr kıyma", "1 soğan (rendelenmiş)", "Tuz, karabiber", "Kızartmak için sıvı yağ"], "yapilis": ["Un, su ve tuzla yumuşak bir hamur yoğurup 20 dakika dinlendirin.", "Kıyma, soğan rendesi ve baharatları karıştırıp iç harcı hazırlayın.", "Hamuru bezelere ayırıp ince açın, yarısına iç harcı yayın.", "Hamuru kapatıp kenarlarını bastırın ve kesin.", "Kızgın yağda iki tarafını da kızartın."], "saklama": {"en_az": 2, "en_cok": 3, "not": "Kızartılmış etli hamur işleri dolapta 2-3 gün dayanır ama en lezzetlisi ilk gün."}, "anahtarlar": ["kıyma", "soğan", "un", "sıvı yağ"]}, {"ad": "Mardin Çöreği (Kliçe)", "kisi": "8-10", "hazirlik": "20 dk", "pisirme": "15 dk", "kategori": "H", "emoji": "🥯", "resim": "https://i.nefisyemektarifleri.com/2026/10/04/mardin-coregi-klice-320x213.jpg", "malzemeler": ["1 su bardağı ılık süt", "Yarım su bardağı sıvı yağ", "125 gr eritilmiş tereyağı", "1 paket instant maya", "2 yemek kaşığı şeker", "1 çay kaşığı tuz", "1 yemek kaşığı çörek baharatı (mahlep, rezene, çörek otu)", "4 su bardağı un", "Üzeri için 1 yumurta sarısı"], "yapilis": ["Süt, yağlar, maya, şeker ve tuzu karıştırın.", "Baharatı ve unu azar azar ekleyerek yumuşak bir hamur yoğurun.", "Hamuru 30 dakika mayalandırın.", "Bezelere ayırıp yuvarlak açın, kenarlarına desen verin ve üstüne yumurta sarısı sürün.", "180 derecede üstü kızarana kadar yaklaşık 15 dakika pişirin."], "saklama": {"en_az": 5, "en_cok": 7, "not": "Kapalı poşette oda sıcaklığında 3-4 gün, dolapta 1 haftaya kadar dayanır. Uzun süre için dondurun."}, "anahtarlar": ["yumurta", "süt", "tereyağı", "un", "şeker", "maya", "sıvı yağ"]}, {"ad": "Domatesli Zeytinli Focaccia", "kisi": "6-8", "hazirlik": "3 saat", "pisirme": "20 dk", "kategori": "H", "emoji": "🍞", "resim": "https://i.nefisyemektarifleri.com/2026/10/06/domatesli-zeytinli-focaccia-320x213.jpg", "malzemeler": ["3,5 su bardağı un", "1,5 su bardağı ılık su", "1 paket instant maya", "1 çay kaşığı şeker", "1 çay kaşığı tuz", "5 yemek kaşığı zeytinyağı", "10 adet çeri domates", "10 adet siyah zeytin", "Kekik, iri tuz"], "yapilis": ["Un, su, maya, şeker ve tuzu karıştırıp cıvık bir hamur yapın.", "Üstüne 2 kaşık zeytinyağı gezdirip kapağı kapalı şekilde 2 saat mayalandırın.", "Yağlanmış tepsiye alıp parmaklarla yayın ve 1 saat daha dinlendirin.", "Parmak uçlarıyla çukurlar açın, domates ve zeytinleri bastırın, kalan zeytinyağı, kekik ve iri tuzu serpin.", "220 derecede 20 dakika pişirin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Taze domatesli olduğu için dolapta saklanmalı; yemeden önce fırında ısıtın."}, "anahtarlar": ["domates", "un", "şeker", "maya", "zeytinyağı", "zeytin"]}, {"ad": "Bolonez Soslu Makarna", "kisi": "4-6", "hazirlik": "20 dk", "pisirme": "15 dk", "kategori": "H", "emoji": "🍝", "resim": "https://i.nefisyemektarifleri.com/2026/10/06/bolonez-soslu-makarna-320x213.jpg", "malzemeler": ["1 paket spagetti", "250 gr kıyma", "1 soğan", "1 havuç", "2 diş sarımsak", "2 domates (rendelenmiş)", "1 yemek kaşığı domates salçası", "2 yemek kaşığı zeytinyağı", "Tuz, karabiber", "Üzeri için rendelenmiş parmesan"], "yapilis": ["Soğan, havuç ve sarımsağı ince doğrayıp zeytinyağında kavurun.", "Kıymayı ekleyip suyunu çekene kadar pişirin.", "Salça ve domatesi ekleyip sosu 10 dakika kısık ateşte pişirin.", "Makarnayı tuzlu suda haşlayıp süzün.", "Makarnayı sosla karıştırıp üstüne parmesan serpin."], "saklama": {"en_az": 3, "en_cok": 4, "not": "Soslu makarna dolapta 3-4 gün dayanır. Sos ayrı saklanırsa sade makarna 3-5 gün dayanır."}, "anahtarlar": ["parmesan", "kıyma", "soğan", "sarımsak", "domates", "havuç", "makarna", "zeytinyağı", "salça"]}, {"ad": "Krema Lezzetinde Sütlü Erişte", "kisi": "4-6", "hazirlik": "10 dk", "pisirme": "20 dk", "kategori": "H", "emoji": "🍜", "resim": "https://i.nefisyemektarifleri.com/2026/10/05/krema-lezzetinde-sutlu-eriste-600x400.jpg", "malzemeler": ["2 su bardağı erişte", "3 su bardağı süt", "1 su bardağı su", "1 yemek kaşığı tereyağı", "Yarım su bardağı rendelenmiş kaşar", "Tuz, karabiber"], "yapilis": ["Erişteyi tereyağında 2-3 dakika kavurun.", "Süt ve suyu ekleyip kaynamaya bırakın.", "Kısık ateşte erişteler sütü çekene kadar karıştırarak pişirin.", "Tuz ve karabiberi ekleyin.", "Üstüne kaşar serpip kapağı kapalı şekilde eriyene kadar bekletin."], "saklama": {"en_az": 2, "en_cok": 3, "not": "Sütlü ve kaşarlı olduğu için kısa sürede tüketilmeli; ısıtırken biraz süt ekleyin."}, "anahtarlar": ["süt", "tereyağı", "kaşar", "erişte"]}, {"ad": "Humus", "kisi": "2-4", "hazirlik": "10 dk", "pisirme": "Pişirme yok", "kategori": "S", "emoji": "🧆", "resim": "https://i.nefisyemektarifleri.com/2026/10/05/humus-efsane-tarif-320x213.jpg", "malzemeler": ["2 su bardağı haşlanmış nohut", "3 yemek kaşığı tahin", "1 limonun suyu", "1 diş sarımsak", "3 yemek kaşığı zeytinyağı", "3-4 yemek kaşığı buzlu su", "Kimyon, tuz", "Üzeri için pul biber"], "yapilis": ["Nohutların kabuklarını mümkün olduğunca soyun.", "Nohut, tahin, limon suyu, sarımsak, kimyon ve tuzu robottan geçirin.", "Buzlu suyu azar azar ekleyerek kremamsı bir kıvam yakalayın.", "Servis tabağına alıp kaşıkla ortasını çukurlaştırın.", "Üstüne zeytinyağı gezdirip pul biber serpin."], "saklama": {"en_az": 3, "en_cok": 5, "not": "Ev yapımı humus hava almayan kapta, üstüne biraz zeytinyağı gezdirilerek 3-5 gün saklanır."}, "anahtarlar": ["sarımsak", "limon", "nohut", "zeytinyağı", "tahin"]}, {"ad": "Çıtır Marul Salatası", "kisi": "1-2", "hazirlik": "5 dk", "pisirme": "5 dk", "kategori": "S", "emoji": "🥗", "resim": "https://i.nefisyemektarifleri.com/2026/10/05/citir-marul-salatasi-320x213.jpg", "malzemeler": ["Yarım marul", "1 salatalık", "2 dal yeşil soğan", "Birkaç dal dereotu", "1 dilim bayat ekmek", "1 yemek kaşığı zeytinyağı", "Yarım limonun suyu", "1 çay kaşığı nar ekşisi", "Tuz"], "yapilis": ["Ekmeği küp doğrayıp tavada çıtır olana kadar kızartın.", "Marulu yıkayıp ince ince doğrayın.", "Salatalık, yeşil soğan ve dereotunu doğrayıp marula ekleyin.", "Zeytinyağı, limon, nar ekşisi ve tuzla sos hazırlayıp salataya dökün.", "Kıtır ekmekleri üstüne serpip hemen servis edin."], "saklama": {"en_az": 1, "en_cok": 1, "not": "Soslu yeşil salata aynı gün yenmeli. Sossuz ve ekmeksiz hali dolapta 2-3 gün dayanır."}, "anahtarlar": ["soğan", "marul", "salatalık", "dereotu", "limon", "zeytinyağı", "nar ekşisi", "ekmek"]}, {"ad": "Şifalı Turp Turşusu", "kisi": "6-8", "hazirlik": "15 dk", "pisirme": "Pişirme yok", "kategori": "S", "emoji": "🥒", "resim": "https://i.nefisyemektarifleri.com/2026/10/01/sahane-sifali-turp-tursusu-yap-ye-320x213.jpg", "malzemeler": ["1 kg turp", "4 diş sarımsak", "1 dilim pancar (renk için)", "1 su bardağı elma sirkesi", "2,5 su bardağı su", "1 yemek kaşığı kaya tuzu", "1 çay kaşığı şeker"], "yapilis": ["Turpları yıkayıp kabuklarıyla birlikte dilimleyin.", "Turpları, sarımsakları ve pancarı cam kavanoza yerleştirin.", "Su, sirke, tuz ve şekeri karıştırıp kavanoza dökün.", "Kavanozun ağzını sıkıca kapatın.", "Serin bir yerde 10-15 gün bekletip öyle tüketin."], "saklama": {"en_az": 60, "en_cok": 90, "not": "Turşu kurulduktan 10-15 gün sonra açılır; açıldıktan sonra dolapta 2-3 ay saklanabilir."}, "anahtarlar": ["sarımsak", "turp", "pancar", "şeker", "sirke"]}];
+const kategoriler = {"T": "Tatlı & Kek", "C": "Çorba", "A": "Ana Yemek", "H": "Hamur & Makarna", "S": "Salata & Meze"};
+const malzemeGruplari = {"Süt ürünleri & Yumurta": ["yumurta", "süt", "yoğurt", "tereyağı", "krema", "labne", "kaşar", "parmesan"], "Et & Tavuk": ["tavuk", "kıyma"], "Sebze": ["soğan", "sarımsak", "domates", "havuç", "patates", "kabak", "ıspanak", "marul", "salatalık", "maydanoz", "dereotu", "turp", "pancar"], "Meyve": ["portakal", "limon", "muz", "şeftali", "vişne"], "Kuru gıda & Bakliyat": ["un", "şeker", "nişasta", "kabartma tozu", "vanilya", "maya", "kakao", "çikolata", "ceviz", "fıstık", "nohut", "mercimek", "bulgur", "fasulye", "makarna", "erişte", "galeta unu", "bisküvi"], "Yağ, Sos & Diğer": ["sıvı yağ", "zeytinyağı", "salça", "tahin", "zeytin", "sirke", "nar ekşisi", "ekmek", "lavaş", "tarçın", "kahve", "fındık kreması"]};
+const OGUNLER = ["Kahvaltı", "Öğle", "Akşam", "Ara öğün"];
+const GUNLER = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+const VARSAYILAN_SAKLAMA_GUNU = 3;
+const AYLAR = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz",
+               "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+let seciliKategori = "";
+let aramaMetni = "";
+let aktifSekme = "tarifler";
+let acikTarifNo = null;
+let haftaKaydirma = 0;  // 0 = bu hafta, -1 = geçen hafta ...
+
+// ---------- tarayıcıda saklama (sayfa kapanınca kaybolmasın) ----------
+function oku(anahtar, varsayilan) {
+  try {
+    const deger = localStorage.getItem(anahtar);
+    return deger ? JSON.parse(deger) : varsayilan;
+  } catch (e) {
+    return varsayilan;
+  }
+}
+
+function kaydet(anahtar, deger) {
+  try { localStorage.setItem(anahtar, JSON.stringify(deger)); } catch (e) {}
+}
+
+let dolaptakiler = oku("tarif-defteri-dolap", []);
+let gunluk = oku("tarif-defteri-gunluk", []);
+let hazirYemekler = oku("tarif-defteri-hazir", []);
+
+const sayfalar = {
+  tarifler: document.getElementById("sayfa-tarifler"),
+  dolap: document.getElementById("sayfa-dolap"),
+  gunluk: document.getElementById("sayfa-gunluk"),
+};
+const liste = document.getElementById("liste");
+const detay = document.getElementById("detay");
+
+// ---------- yardımcı fonksiyonlar ----------
+function kucukHarf(yazi) {
+  return yazi.toLocaleLowerCase("tr");
+}
+
+function guvenli(yazi) {
+  // kullanıcının yazdığı metin html gibi çalışmasın
+  const karsilik = {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"};
+  return String(yazi).replace(/[&<>"']/g, k => karsilik[k]);
+}
+
+function sureYazisi(saklama) {
+  if (!saklama) return "Bilgi yok";
+  if (saklama.en_az >= 30) return Math.floor(saklama.en_az / 30) + "-" + Math.floor(saklama.en_cok / 30) + " ay";
+  if (saklama.en_az === saklama.en_cok) return saklama.en_az + " gün";
+  return saklama.en_az + "-" + saklama.en_cok + " gün";
+}
+
+function tarihYazisi(tarih) {
+  // Date -> "2026-10-06"
+  const ay = String(tarih.getMonth() + 1).padStart(2, "0");
+  const gun = String(tarih.getDate()).padStart(2, "0");
+  return tarih.getFullYear() + "-" + ay + "-" + gun;
+}
+
+function tarihNesnesi(yazi) {
+  const [yil, ay, gun] = yazi.split("-").map(Number);
+  return new Date(yil, ay - 1, gun);
+}
+
+function gunEkle(yazi, gunSayisi) {
+  const tarih = tarihNesnesi(yazi);
+  tarih.setDate(tarih.getDate() + gunSayisi);
+  return tarihYazisi(tarih);
+}
+
+function gunFarki(ilk, son) {
+  return Math.round((tarihNesnesi(son) - tarihNesnesi(ilk)) / 86400000);
+}
+
+function guzelTarih(yazi) {
+  const tarih = tarihNesnesi(yazi);
+  return tarih.getDate() + " " + AYLAR[tarih.getMonth()];
+}
+
+function bugun() {
+  return tarihYazisi(new Date());
+}
+
+function ogunTahmini() {
+  const saat = new Date().getHours();
+  if (saat < 11) return "Kahvaltı";
+  if (saat < 16) return "Öğle";
+  if (saat < 22) return "Akşam";
+  return "Ara öğün";
+}
+
+function tarifNumarasi(yemekAdi) {
+  return tarifler.findIndex(t => kucukHarf(t.ad) === kucukHarf(yemekAdi.trim()));
+}
+
+// ---------- sekmeler ----------
+function sekmeyeGec(ad) {
+  aktifSekme = ad;
+  document.querySelectorAll(".sekme").forEach(b => b.classList.toggle("secili", b.dataset.sekme === ad));
+  for (const isim in sayfalar) sayfalar[isim].hidden = isim !== ad;
+  detay.hidden = true;
+  if (ad === "dolap") dolabiCiz();
+  if (ad === "gunluk") gunluguCiz();
+}
+
+// ---------- tarif listesi ----------
+function resimKutusu(tarif) {
+  let html = `<div class="resim"><span class="emoji">${tarif.emoji}</span>`;
+  if (tarif.resim) {
+    html += `<img src="${tarif.resim}" alt="${tarif.ad}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`;
+  }
+  return html + "</div>";
+}
+
+function etiketler(tarif) {
+  return `<div class="etiketler">
+    <span>👥 ${tarif.kisi} kişilik</span>
+    <span>⏱ ${tarif.hazirlik}</span>
+    <span>🔥 ${tarif.pisirme}</span>
+    <span>🧊 ${sureYazisi(tarif.saklama)}</span>
+  </div>`;
+}
+
+function kartHtml(tarif, no, ekBilgi = "") {
+  return `<article class="kart">
+    ${resimKutusu(tarif)}
+    <h2>${tarif.ad}</h2>
+    ${etiketler(tarif)}
+    ${ekBilgi}
+    <button class="buton" data-no="${no}">Tarifi Göster</button>
+  </article>`;
+}
+
+function kategoriButonlariniYap() {
+  let html = `<button class="kategori secili" data-kod="">Tümü</button>`;
+  for (const kod in kategoriler) {
+    html += `<button class="kategori" data-kod="${kod}">${kategoriler[kod]}</button>`;
+  }
+  document.getElementById("kategoriler").innerHTML = html;
+}
+
+function listeyiCiz() {
+  let html = "";
+  let bulunan = 0;
+
+  tarifler.forEach((tarif, no) => {
+    const kategoriUygun = seciliKategori === "" || tarif.kategori === seciliKategori;
+    const aramaUygun = kucukHarf(tarif.ad).includes(kucukHarf(aramaMetni));
+    if (kategoriUygun && aramaUygun) {
+      bulunan++;
+      html += kartHtml(tarif, no);
+    }
+  });
+
+  if (bulunan === 0) {
+    html = `<div class="bos">Sonuç bulunamadı 🍳</div>`;
+  }
+  liste.innerHTML = html;
+  document.getElementById("sayi").textContent = tarifler.length + " tarif · " + bulunan + " sonuç";
+}
+
+// ---------- tarif detayı ----------
+function tarifiAc(no) {
+  const tarif = tarifler[no];
+  acikTarifNo = no;
+
+  let malzemeler = "";
+  tarif.malzemeler.forEach(m => { malzemeler += `<li>${m}</li>`; });
+
+  let adimlar = "";
+  tarif.yapilis.forEach(a => { adimlar += `<li>${a}</li>`; });
+
+  let saklama = "";
+  if (tarif.saklama) {
+    saklama = `<div class="saklama-kutusu">🧊 <b>Buzdolabında ortalama ${sureYazisi(tarif.saklama)}</b> dayanır.<br>${tarif.saklama.not}</div>`;
+  }
+
+  detay.innerHTML = `
+    <button class="geri">← Geri dön</button>
+    ${resimKutusu(tarif)}
+    <p class="kategori-adi">${kategoriler[tarif.kategori]}</p>
+    <h2>${tarif.emoji} ${tarif.ad}</h2>
+    <div class="bilgi-kutulari">
+      <div class="bilgi-kutusu"><small>Kişi sayısı</small><b>👥 ${tarif.kisi}</b></div>
+      <div class="bilgi-kutusu"><small>Hazırlık</small><b>⏱ ${tarif.hazirlik}</b></div>
+      <div class="bilgi-kutusu"><small>Pişirme</small><b>🔥 ${tarif.pisirme}</b></div>
+      <div class="bilgi-kutusu"><small>Dolapta saklama</small><b>🧊 ${sureYazisi(tarif.saklama)}</b></div>
+    </div>
+    ${saklama}
+    <div class="detay-butonlari">
+      <button class="kucuk-buton yedim">🍽 Bugün bunu yedim</button>
+      <button class="kucuk-buton ikincil dolaba-kaldir">🧊 Artanı dolaba kaldırdım</button>
+    </div>
+    <p class="mesaj" id="detay-mesaj"></p>
+    <div class="bolumler">
+      <div class="bolum">
+        <h3>Malzemeler</h3>
+        <ul class="malzemeler">${malzemeler}</ul>
+        <p class="not">Hazırladığın malzemenin üstüne tıklayıp işaretleyebilirsin.</p>
+      </div>
+      <div class="bolum">
+        <h3>Yapılışı</h3>
+        <ol class="adimlar">${adimlar}</ol>
+      </div>
+    </div>`;
+
+  sayfalar[aktifSekme].hidden = true;
+  detay.hidden = false;
+  detay.scrollIntoView();
+}
+
+function geriDon() {
+  detay.hidden = true;
+  sayfalar[aktifSekme].hidden = false;
+  if (aktifSekme === "dolap") dolabiCiz();
+  if (aktifSekme === "gunluk") gunluguCiz();
+  sayfalar[aktifSekme].scrollIntoView();
+}
+
+// ---------- buzdolabım ----------
+function tumMalzemeler() {
+  return Object.values(malzemeGruplari).flat();
+}
+
+function malzemeDegistir(malzeme) {
+  if (dolaptakiler.includes(malzeme)) {
+    dolaptakiler = dolaptakiler.filter(m => m !== malzeme);
+  } else {
+    dolaptakiler.push(malzeme);
+  }
+  kaydet("tarif-defteri-dolap", dolaptakiler);
+  dolabiCiz();
+}
+
+function yazilanMalzemeyiEkle() {
+  const kutu = document.getElementById("malzeme-yaz");
+  const uyari = document.getElementById("malzeme-uyari");
+  const malzeme = kucukHarf(kutu.value.trim());
+  if (malzeme === "") return;
+
+  if (!tumMalzemeler().includes(malzeme)) {
+    uyari.textContent = `"${malzeme}" tariflerimizde geçmiyor. Listeden seçmeyi dene.`;
+    return;
+  }
+  uyari.textContent = "";
+  kutu.value = "";
+  if (!dolaptakiler.includes(malzeme)) {
+    dolaptakiler.push(malzeme);
+    kaydet("tarif-defteri-dolap", dolaptakiler);
+  }
+  dolabiCiz();
+}
+
+function malzemeleriCiz() {
+  let secilenler = "";
+  dolaptakiler.forEach(m => {
+    secilenler += `<button class="cip secili" data-malzeme="${m}" title="Çıkar">${m}</button>`;
+  });
+  if (dolaptakiler.length > 0) {
+    secilenler = `<b>Dolabımda:</b> ${secilenler} <button class="temizle" id="dolabi-bosalt">Hepsini temizle</button>`;
+  } else {
+    secilenler = `<span class="eksik">Dolabın şu an boş görünüyor. Aşağıdan malzeme seç.</span>`;
+  }
+  document.getElementById("secilenler").innerHTML = secilenler;
+
+  let gruplar = "";
+  for (const grup in malzemeGruplari) {
+    gruplar += `<h4>${grup}</h4><div class="cipler">`;
+    malzemeGruplari[grup].forEach(m => {
+      const secili = dolaptakiler.includes(m) ? " secili" : "";
+      gruplar += `<button class="cip${secili}" data-malzeme="${m}">${m}</button>`;
+    });
+    gruplar += "</div>";
+  }
+  document.getElementById("malzeme-gruplari").innerHTML = gruplar;
+}
+
+function onerileriCiz() {
+  const kutu = document.getElementById("oneriler");
+  if (dolaptakiler.length === 0) {
+    kutu.innerHTML = `<div class="bos">Dolabındaki malzemeleri seçince yapabileceğin tarifler burada çıkacak 🥕</div>`;
+    return;
+  }
+
+  const sonuc = [];
+  tarifler.forEach((tarif, no) => {
+    const olanlar = tarif.anahtarlar.filter(m => dolaptakiler.includes(m));
+    const eksikler = tarif.anahtarlar.filter(m => !dolaptakiler.includes(m));
+    if (olanlar.length === 0) return;
+    sonuc.push({tarif, no, eksikler, uyum: olanlar.length / tarif.anahtarlar.length});
+  });
+  // önce uyumu yüksek olan, eşitse eksiği az olan
+  sonuc.sort((a, b) => b.uyum - a.uyum || a.eksikler.length - b.eksikler.length);
+
+  if (sonuc.length === 0) {
+    kutu.innerHTML = `<div class="bos">Bu malzemelerle eşleşen tarif bulamadım 🍳</div>`;
+    return;
+  }
+
+  const hemenYapilir = sonuc.filter(s => s.eksikler.length === 0).length;
+  let html = `<p class="ozet">${sonuc.length} tarif bulundu · ${hemenYapilir} tanesinin bütün malzemeleri dolabında</p>`;
+  sonuc.forEach(s => {
+    const yuzde = Math.round(s.uyum * 100);
+    let eksikYazi;
+    if (s.eksikler.length === 0) {
+      eksikYazi = `<span class="tamam">✅ Bütün malzemeler dolabında</span>`;
+    } else {
+      eksikYazi = `<span class="eksik">Eksik: ${s.eksikler.join(", ")}</span>`;
+    }
+    const uyum = `<div class="uyum">
+      <div class="cubuk"><span style="width:${yuzde}%"></span></div>
+      <b>%${yuzde} uyum</b> · ${eksikYazi}
+    </div>`;
+    html += kartHtml(s.tarif, s.no, uyum);
+  });
+  kutu.innerHTML = html;
+}
+
+// dolaba kaldırılan pişmiş yemekler
+function hazirYemekEkle(yemek, tarih) {
+  const no = tarifNumarasi(yemek);
+  let gun = VARSAYILAN_SAKLAMA_GUNU;
+  if (no >= 0 && tarifler[no].saklama) gun = tarifler[no].saklama.en_cok;
+  hazirYemekler.push({id: Date.now() + Math.random(), yemek: yemek, tarih: tarih, sonGun: gunEkle(tarih, gun)});
+  kaydet("tarif-defteri-hazir", hazirYemekler);
+}
+
+function hazirYemekleriCiz() {
+  const kutu = document.getElementById("hazir-yemekler");
+  if (hazirYemekler.length === 0) {
+    kutu.innerHTML = `<h3>🍱 Dolaptaki pişmiş yemekler</h3>
+      <p class="eksik">Henüz yok. Bir tarifte "Artanı dolaba kaldırdım" dediğinde burada ne zamana kadar yemen gerektiği görünür.</p>`;
+    return;
+  }
+
+  const sirali = [...hazirYemekler].sort((a, b) => a.sonGun.localeCompare(b.sonGun));
+  let html = `<h3>🍱 Dolaptaki pişmiş yemekler</h3>`;
+  sirali.forEach(y => {
+    const kalan = gunFarki(bugun(), y.sonGun);
+    let durum;
+    if (kalan < 0) durum = `<span class="durum gecti">⛔ Süresi geçti</span>`;
+    else if (kalan === 0) durum = `<span class="durum uyari">⚠️ Bugün son gün</span>`;
+    else if (kalan === 1) durum = `<span class="durum uyari">⚠️ Yarın son gün</span>`;
+    else durum = `<span class="durum iyi">✅ ${kalan} gün kaldı</span>`;
+
+    const no = tarifNumarasi(y.yemek);
+    const ad = no >= 0 ? `<span class="tarif-link" data-no="${no}">${guvenli(y.yemek)}</span>` : guvenli(y.yemek);
+    html += `<div class="satir">
+      <div class="ad">${ad}<small>${guzelTarih(y.tarih)} tarihinde kaldırıldı · en geç ${guzelTarih(y.sonGun)}</small></div>
+      ${durum}
+      <button class="sil" data-hazir="${y.id}" title="Bitti / attım">✕</button>
+    </div>`;
+  });
+  kutu.innerHTML = html;
+}
+
+function dolabiCiz() {
+  malzemeleriCiz();
+  hazirYemekleriCiz();
+  onerileriCiz();
+}
+
+// ---------- yemek günlüğü ----------
+function gunlugeEkle(tarih, ogun, yemek) {
+  gunluk.push({id: Date.now() + Math.random(), tarih: tarih, ogun: ogun, yemek: yemek});
+  kaydet("tarif-defteri-gunluk", gunluk);
+}
+
+function haftaninGunleri() {
+  const simdi = new Date();
+  const pazartesi = new Date(simdi.getFullYear(), simdi.getMonth(), simdi.getDate());
+  pazartesi.setDate(pazartesi.getDate() - (simdi.getDay() + 6) % 7 + haftaKaydirma * 7);
+  const gunler = [];
+  for (let i = 0; i < 7; i++) {
+    const gun = new Date(pazartesi);
+    gun.setDate(pazartesi.getDate() + i);
+    gunler.push(tarihYazisi(gun));
+  }
+  return gunler;
+}
+
+function gunluguCiz() {
+  const gunler = haftaninGunleri();
+  document.getElementById("hafta-adi").textContent =
+    guzelTarih(gunler[0]) + " – " + guzelTarih(gunler[6]) + " " + tarihNesnesi(gunler[6]).getFullYear();
+
+  let html = "";
+  let toplam = 0;
+  const sayac = {};
+
+  gunler.forEach((gun, i) => {
+    const kayitlar = gunluk
+      .filter(k => k.tarih === gun)
+      .sort((a, b) => OGUNLER.indexOf(a.ogun) - OGUNLER.indexOf(b.ogun));
+    toplam += kayitlar.length;
+
+    let satirlar = "";
+    kayitlar.forEach(k => {
+      sayac[k.yemek] = (sayac[k.yemek] || 0) + 1;
+      const no = tarifNumarasi(k.yemek);
+      const ad = no >= 0
+        ? `<span class="tarif-link" data-no="${no}">${tarifler[no].emoji} ${guvenli(k.yemek)}</span>`
+        : guvenli(k.yemek);
+      satirlar += `<li><span class="ogun">${k.ogun}</span><span class="yemek-adi">${ad}</span>
+        <button class="sil" data-kayit="${k.id}" title="Sil">✕</button></li>`;
+    });
+    if (satirlar === "") satirlar = `<li class="bos-gun">Kayıt yok</li>`;
+
+    const bugunMu = gun === bugun() ? " bugun" : "";
+    html += `<div class="gun${bugunMu}">
+      <h3>${GUNLER[i]} <small>${guzelTarih(gun)}</small></h3>
+      <ul>${satirlar}</ul>
+    </div>`;
+  });
+  document.getElementById("hafta").innerHTML = html;
+
+  let ozet = "Bu hafta için henüz kayıt yok.";
+  if (toplam > 0) {
+    const enCok = Object.keys(sayac).sort((a, b) => sayac[b] - sayac[a])[0];
+    ozet = `Bu hafta ${toplam} öğün kaydedildi · ${Object.keys(sayac).length} farklı yemek · En çok yenen: ${guvenli(enCok)} (${sayac[enCok]} kez)`;
+  }
+  document.getElementById("hafta-ozeti").innerHTML = ozet;
+}
+
+function gunlukFormunuHazirla() {
+  document.getElementById("g-tarih").value = bugun();
+  let secenekler = "";
+  OGUNLER.forEach(o => { secenekler += `<option>${o}</option>`; });
+  document.getElementById("g-ogun").innerHTML = secenekler;
+  document.getElementById("g-ogun").value = ogunTahmini();
+
+  let adlar = "";
+  tarifler.forEach(t => { adlar += `<option value="${t.ad}">`; });
+  document.getElementById("tarif-adlari").innerHTML = adlar;
+
+  let malzemeler = "";
+  tumMalzemeler().forEach(m => { malzemeler += `<option value="${m}">`; });
+  document.getElementById("malzeme-onerileri").innerHTML = malzemeler;
+}
+
+// ---------- butonlar ----------
+document.getElementById("sekmeler").addEventListener("click", e => {
+  const buton = e.target.closest(".sekme");
+  if (buton) sekmeyeGec(buton.dataset.sekme);
+});
+
+document.getElementById("kategoriler").addEventListener("click", e => {
+  const buton = e.target.closest(".kategori");
+  if (!buton) return;
+  seciliKategori = buton.dataset.kod;
+  document.querySelectorAll(".kategori").forEach(b => b.classList.toggle("secili", b === buton));
+  listeyiCiz();
+});
+
+document.getElementById("ara").addEventListener("input", e => {
+  aramaMetni = e.target.value;
+  listeyiCiz();
+});
+
+// "Tarifi Göster" butonları ve tarif adlarına tıklama bütün sayfalarda aynı
+document.querySelector(".defter").addEventListener("click", e => {
+  const buton = e.target.closest(".buton, .tarif-link");
+  if (buton && !detay.contains(buton)) tarifiAc(Number(buton.dataset.no));
+});
+
+detay.addEventListener("click", e => {
+  if (e.target.closest(".geri")) {
+    geriDon();
+    return;
+  }
+  const tarif = tarifler[acikTarifNo];
+  const mesaj = document.getElementById("detay-mesaj");
+  if (e.target.closest(".yedim")) {
+    const ogun = ogunTahmini();
+    gunlugeEkle(bugun(), ogun, tarif.ad);
+    mesaj.textContent = `✓ Günlüğüne eklendi (bugün, ${ogun}).`;
+    return;
+  }
+  if (e.target.closest(".dolaba-kaldir")) {
+    hazirYemekEkle(tarif.ad, bugun());
+    const son = hazirYemekler[hazirYemekler.length - 1].sonGun;
+    mesaj.textContent = `✓ Buzdolabına eklendi. En geç ${guzelTarih(son)} tarihine kadar tüket.`;
+    return;
+  }
+  const malzeme = e.target.closest(".malzemeler li");
+  if (malzeme) malzeme.classList.toggle("alindi");
+});
+
+sayfalar.dolap.addEventListener("click", e => {
+  if (e.target.id === "malzeme-ekle-buton") {
+    yazilanMalzemeyiEkle();
+    return;
+  }
+  if (e.target.id === "dolabi-bosalt") {
+    dolaptakiler = [];
+    kaydet("tarif-defteri-dolap", dolaptakiler);
+    dolabiCiz();
+    return;
+  }
+  const cip = e.target.closest(".cip");
+  if (cip) {
+    malzemeDegistir(cip.dataset.malzeme);
+    return;
+  }
+  const sil = e.target.closest("[data-hazir]");
+  if (sil) {
+    hazirYemekler = hazirYemekler.filter(y => String(y.id) !== sil.dataset.hazir);
+    kaydet("tarif-defteri-hazir", hazirYemekler);
+    hazirYemekleriCiz();
+  }
+});
+
+document.getElementById("malzeme-yaz").addEventListener("keydown", e => {
+  if (e.key === "Enter") yazilanMalzemeyiEkle();
+});
+
+document.getElementById("gunluk-formu").addEventListener("submit", e => {
+  e.preventDefault();
+  const tarih = document.getElementById("g-tarih").value || bugun();
+  const ogun = document.getElementById("g-ogun").value;
+  const yemekKutusu = document.getElementById("g-yemek");
+  const yemek = yemekKutusu.value.trim();
+  if (yemek === "") return;
+
+  // tarif defterde varsa adını defterdeki gibi yaz
+  const no = tarifNumarasi(yemek);
+  const ad = no >= 0 ? tarifler[no].ad : yemek;
+  gunlugeEkle(tarih, ogun, ad);
+  if (document.getElementById("g-dolap").checked) hazirYemekEkle(ad, tarih);
+
+  yemekKutusu.value = "";
+  document.getElementById("g-dolap").checked = false;
+  // eklenen günün haftasına git
+  const fark = gunFarki(haftaninGunleri()[0], tarih);
+  haftaKaydirma += Math.floor(fark / 7);
+  gunluguCiz();
+});
+
+sayfalar.gunluk.addEventListener("click", e => {
+  if (e.target.id === "onceki-hafta") haftaKaydirma--;
+  else if (e.target.id === "sonraki-hafta") haftaKaydirma++;
+  else if (e.target.id === "bu-hafta") haftaKaydirma = 0;
+  else {
+    const sil = e.target.closest("[data-kayit]");
+    if (!sil) return;
+    gunluk = gunluk.filter(k => String(k.id) !== sil.dataset.kayit);
+    kaydet("tarif-defteri-gunluk", gunluk);
+  }
+  gunluguCiz();
+});
+
+kategoriButonlariniYap();
+gunlukFormunuHazirla();
+listeyiCiz();
+</script></body></html>
